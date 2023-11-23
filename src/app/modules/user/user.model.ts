@@ -93,9 +93,9 @@ const userSchema = new Schema<TUser, UserModel>(
     orders: [ordersSchema],
   },
   {
-    toJSON: {
-      virtuals: true,
-    },
+    // toJSON: {
+    //   virtuals: true,
+    // },
     versionKey: false,
   },
 );
@@ -136,12 +136,12 @@ userSchema.pre('save', async function (next) {
 
 // query middlewares
 userSchema.pre('find', async function (next) {
-  this.projection({ password: 0 });
+  this.select({ password: 0 });
   next();
 });
 
 userSchema.pre('findOne', async function (next) {
-  this.projection({ password: 0 });
+  this.select({ password: 0 });
 
   next();
 });
