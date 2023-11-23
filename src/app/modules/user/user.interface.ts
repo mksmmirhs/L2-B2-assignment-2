@@ -16,7 +16,7 @@ export type TOrders = {
 };
 
 export type TUser = {
-  userId: string;
+  userId: number;
   username: string;
   password: string;
   fullName: TFullName;
@@ -25,5 +25,5 @@ export type TUser = {
   isActive: boolean;
   hobbies: string[];
   address: TAddress;
-  orders?: TOrders;
+  orders?: TOrders[];
 };
