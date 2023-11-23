@@ -1,5 +1,11 @@
 import { Schema, model } from 'mongoose';
-import { TAddress, TFullName, TOrders, TUser } from './user.interface';
+import {
+  TAddress,
+  TFullName,
+  TOrders,
+  TUser,
+  UserModel,
+} from './user.interface';
 
 const fullNameSchema = new Schema<TFullName>(
   {
@@ -51,7 +57,7 @@ const ordersSchema = new Schema<TOrders>(
   { _id: false },
 );
 
-const userSchema = new Schema<TUser>({
+const userSchema = new Schema<TUser, UserModel>({
   userId: {
     type: Number,
     required: [true, 'Username is missing'],
@@ -84,4 +90,15 @@ const userSchema = new Schema<TUser>({
   orders: [ordersSchema],
 });
 
-export const User = model<TUser>('User', userSchema);
+// finds if id is used
+userSchema.statics.isUserExist = async function (userId: number) {
+  const result = await User.findOne({ userId });
+  return result;
+};
+// finds is the user with the username still exists
+userSchema.statics.isUserNameExist = async function (username: string) {
+  const result = await User.findOne({ username });
+  return result;
+};
+
+export const User = model<TUser, UserModel>('User', userSchema);

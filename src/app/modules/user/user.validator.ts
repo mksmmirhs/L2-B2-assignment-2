@@ -20,9 +20,9 @@ const addressValidation = z.object({
     required_error: 'city is required',
     invalid_type_error: 'city must be a string',
   }),
-  lastName: z.string({
-    required_error: 'city is required',
-    invalid_type_error: 'city must be a string',
+  country: z.string({
+    required_error: 'country is required',
+    invalid_type_error: 'country must be a string',
   }),
 });
 
@@ -74,6 +74,6 @@ const userValidation = z.object({
     })
     .array(),
   address: addressValidation,
-  orders: ordersValidation.optional().array(),
+  orders: ordersValidation.array().optional(),
 });
-export const Validation = { userValidation, ordersValidation };
+export const UserValidation = { userValidation, ordersValidation };
