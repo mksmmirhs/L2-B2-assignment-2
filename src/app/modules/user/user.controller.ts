@@ -26,10 +26,11 @@ const createUser = async (req: Request, res: Response) => {
     const userData = req.body;
     const zodData = UserValidation.userValidation.parse(userData);
     const result = await UserService.CreateUser(zodData);
+
     res.status(200).json({
       success: true,
       message: 'User created successfully!',
-      data: result,
+      data: result.user_info,
     });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {

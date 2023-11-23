@@ -59,38 +59,46 @@ const ordersSchema = new Schema<TOrders>(
   { _id: false },
 );
 
-const userSchema = new Schema<TUser, UserModel>({
-  userId: {
-    type: Number,
-    required: [true, 'Username is missing'],
-    unique: true,
+const userSchema = new Schema<TUser, UserModel>(
+  {
+    userId: {
+      type: Number,
+      required: [true, 'Username is missing'],
+      unique: true,
+    },
+    username: {
+      type: String,
+      required: [true, 'username is missing'],
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: [true, 'Password is missing'],
+    },
+    fullName: fullNameSchema,
+    age: {
+      type: Number,
+      required: [true, 'age is missing'],
+    },
+    email: {
+      type: String,
+      required: [true, 'Password is missing'],
+    },
+    isActive: {
+      type: Boolean,
+      required: [true, 'Active status is missing'],
+    },
+    hobbies: [String],
+    address: addressSchema,
+    orders: [ordersSchema],
   },
-  username: {
-    type: String,
-    required: [true, 'username is missing'],
-    unique: true,
+  {
+    toJSON: {
+      virtuals: true,
+    },
+    versionKey: false,
   },
-  password: {
-    type: String,
-    required: [true, 'Password is missing'],
-  },
-  fullName: fullNameSchema,
-  age: {
-    type: Number,
-    required: [true, 'Username is missing'],
-  },
-  email: {
-    type: String,
-    required: [true, 'Password is missing'],
-  },
-  isActive: {
-    type: Boolean,
-    required: [true, 'Active status is missing'],
-  },
-  hobbies: [String],
-  address: addressSchema,
-  orders: [ordersSchema],
-});
+);
 
 // finds if id is used
 userSchema.statics.isUserExist = async function (userId: number) {
@@ -103,13 +111,51 @@ userSchema.statics.isUserNameExist = async function (username: string) {
   return result;
 };
 
-// post save middleware
+// virtual
+
+userSchema.virtual('user_info').get(function (this) {
+  const username = this.username;
+  const fullName = this.fullName;
+  const age = this.age;
+  const email = this.email;
+  const address = this.address;
+
+  const user_info = { username, fullName, age, email, address };
+  return user_info;
+});
+
+// pre save middleware
 
 // hashing the password
 userSchema.pre('save', async function (next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias
   const data = this;
   data.password = await bcrypt.hash(data.password, Number(config.salt_round));
+  next();
+});
+
+// query middlewares
+userSchema.pre('find', async function (next) {
+  this.projection({ password: 0 });
+  next();
+});
+
+userSchema.pre('findOne', async function (next) {
+  this.projection({ password: 0 });
+
+  next();
+});
+
+userSchema.pre('aggregate', function (next) {
+  this.pipeline().push({ $project: { password: 0 } });
+  next();
+});
+
+// post save middleware
+userSchema.post('save', async function (doc, next) {
+  // forcing the undefined to string to avoid ts error
+  doc.password = undefined as unknown as string;
+
   next();
 });
 
