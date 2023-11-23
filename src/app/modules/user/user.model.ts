@@ -1,46 +1,55 @@
 import { Schema, model } from 'mongoose';
 import { TAddress, TFullName, TOrders, TUser } from './user.interface';
 
-const fullNameSchema = new Schema<TFullName>({
-  firstName: {
-    type: String,
-    required: [true, 'first name is missing'],
+const fullNameSchema = new Schema<TFullName>(
+  {
+    firstName: {
+      type: String,
+      required: [true, 'first name is missing'],
+    },
+    lastName: {
+      type: String,
+      required: [true, 'last name is missing'],
+    },
   },
-  lastName: {
-    type: String,
-    required: [true, 'last name is missing'],
-  },
-});
+  { _id: false },
+);
 
-const addressSchema = new Schema<TAddress>({
-  street: {
-    type: String,
-    required: [true, 'Street is missing'],
+const addressSchema = new Schema<TAddress>(
+  {
+    street: {
+      type: String,
+      required: [true, 'Street is missing'],
+    },
+    city: {
+      type: String,
+      required: [true, 'City is missing'],
+    },
+    country: {
+      type: String,
+      required: [true, 'Country is missing'],
+    },
   },
-  city: {
-    type: String,
-    required: [true, 'City is missing'],
-  },
-  country: {
-    type: String,
-    required: [true, 'Country is missing'],
-  },
-});
+  { _id: false },
+);
 
-const ordersSchema = new Schema<TOrders>({
-  productName: {
-    type: String,
-    required: [true, 'Product name is missing'],
+const ordersSchema = new Schema<TOrders>(
+  {
+    productName: {
+      type: String,
+      required: [true, 'Product name is missing'],
+    },
+    price: {
+      type: Number,
+      required: [true, 'Price is missing'],
+    },
+    quantity: {
+      type: Number,
+      required: [true, 'Quantity is missing'],
+    },
   },
-  price: {
-    type: Number,
-    required: [true, 'Price is missing'],
-  },
-  quantity: {
-    type: Number,
-    required: [true, 'Quantity is missing'],
-  },
-});
+  { _id: false },
+);
 
 const userSchema = new Schema<TUser>({
   userId: {
@@ -75,4 +84,4 @@ const userSchema = new Schema<TUser>({
   orders: [ordersSchema],
 });
 
-export const UserModel = model<TUser>('User', userSchema);
+export const User = model<TUser>('User', userSchema);
