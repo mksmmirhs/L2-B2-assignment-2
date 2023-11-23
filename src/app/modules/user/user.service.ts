@@ -1,15 +1,19 @@
-import { TUser } from './user.interface';
+import { TUser, TUserInfo } from './user.interface';
 import { User } from './user.model';
 
 // creating user into database
-const CreateUser = async (user: TUser) => {
+const CreateUser = async (user: TUser): Promise<TUserInfo> => {
   if (await User.isUserExist(user.userId)) {
     throw new Error('User already exist');
   }
   if (await User.isUserNameExist(user.username)) {
     throw new Error('Username already exist please provide unique username');
   }
-  const result = await User.create(user);
+
+  // adding virtual to the response
+  const result: TUserInfo = (await User.create(user)).toJSON({
+    virtuals: true,
+  });
   return result;
 };
 // getting all users

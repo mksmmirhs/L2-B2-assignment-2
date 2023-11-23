@@ -30,6 +30,16 @@ export type TUser = {
   orders?: TOrders[];
 };
 
+export type TUserInfo = TUser & {
+  user_info: {
+    username: string;
+    fullName: TFullName;
+    age: number;
+    email: string;
+    address: TAddress;
+  };
+};
+
 export interface UserModel extends Model<TUser> {
   isUserExist(userId: number): boolean;
   isUserNameExist(username: string): boolean;

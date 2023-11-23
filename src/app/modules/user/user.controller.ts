@@ -30,7 +30,7 @@ const createUser = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       message: 'User created successfully!',
-      data: result.toJSON({ virtuals: true }).user_info,
+      data: result.user_info,
     });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
