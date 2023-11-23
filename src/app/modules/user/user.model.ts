@@ -6,6 +6,8 @@ import {
   TUser,
   UserModel,
 } from './user.interface';
+import bcrypt from 'bcrypt';
+import config from '../../config';
 
 const fullNameSchema = new Schema<TFullName>(
   {
@@ -100,5 +102,15 @@ userSchema.statics.isUserNameExist = async function (username: string) {
   const result = await User.findOne({ username });
   return result;
 };
+
+// post save middleware
+
+// hashing the password
+userSchema.pre('save', async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const data = this;
+  data.password = await bcrypt.hash(data.password, Number(config.salt_round));
+  next();
+});
 
 export const User = model<TUser, UserModel>('User', userSchema);
