@@ -1,4 +1,4 @@
-import { Document, Schema, model } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import {
   TAddress,
   TFullName,
@@ -126,6 +126,15 @@ userSchema.pre('save', async function (next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias
   const data = this;
   data.password = await bcrypt.hash(data.password, Number(config.salt_round));
+  next();
+});
+userSchema.pre('findOneAndUpdate', async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const data = this.getUpdate() as Partial<TUser>;
+  // Check if the update operation includes the password field
+  if (data.password) {
+    data.password = await bcrypt.hash(data.password, Number(config.salt_round));
+  }
   next();
 });
 

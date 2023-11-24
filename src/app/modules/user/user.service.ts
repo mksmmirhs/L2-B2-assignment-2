@@ -51,7 +51,7 @@ const findAUserById = async (userId: number) => {
 
 //update a user
 const updateAUser = async (id: number, userData: TUser) => {
-  if (await User.isUserExist(id)) {
+  if (!(await User.isUserExist(id))) {
     throw new Error('User not found to update');
   }
 
