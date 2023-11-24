@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Document, Schema, model } from 'mongoose';
 import {
   TAddress,
   TFullName,
@@ -93,22 +93,17 @@ const userSchema = new Schema<TUser, UserModel>(
     orders: [ordersSchema],
   },
   {
-    // toJSON: {
-    //   virtuals: true,
-    // },
     versionKey: false,
   },
 );
 
 // finds if id is used
 userSchema.statics.isUserExist = async function (userId: number) {
-  const result = await User.findOne({ userId });
-  return result;
+  return !!(await User.findOne({ userId }));
 };
 // finds is the user with the username still exists
 userSchema.statics.isUserNameExist = async function (username: string) {
-  const result = await User.findOne({ username });
-  return result;
+  return !!(await User.findOne({ username }));
 };
 
 // virtual
@@ -152,11 +147,16 @@ userSchema.pre('aggregate', function (next) {
 });
 
 // post save middleware
-userSchema.post('save', async function (doc, next) {
-  // forcing the undefined to string to avoid ts error
-  doc.password = undefined as unknown as string;
+userSchema.post(
+  'save',
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async function (doc: any, next) {
+    // forcing doc to any to delete password as it is required on user type
 
-  next();
-});
+    delete doc.password;
+
+    next();
+  },
+);
 
 export const User = model<TUser, UserModel>('User', userSchema);

@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(cors());
 
 // setting routes of api to user routes
-app.use('/api', UserRoutes);
+app.use('/api/users', UserRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Welcome api is running');

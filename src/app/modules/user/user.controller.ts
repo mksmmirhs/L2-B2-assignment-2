@@ -21,6 +21,7 @@ const errorFormatterZod = (error: any) => {
   return err;
 };
 
+// creating new user response
 const createUser = async (req: Request, res: Response) => {
   try {
     const userData = req.body;
@@ -41,16 +42,17 @@ const createUser = async (req: Request, res: Response) => {
     } else {
       res.json({
         success: false,
-        message: error.message,
+        message: error.message || 'Something went wrong ',
         error: {
           code: 404,
-          description: error.message,
+          description: error.message || 'Something went wrong ',
         },
       });
     }
   }
 };
 
+// get all user response
 const getAllUsers = async (req: Request, res: Response) => {
   try {
     const result = await UserService.getAllUsers();
@@ -74,7 +76,69 @@ const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
+// get user a user by id response
+
+const findAUserById = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const result = await UserService.findAUserById(Number(userId));
+
+    res.status(200).json({
+      success: true,
+      message: 'user retrieve successfully!',
+      data: result,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    res.json({
+      success: false,
+      message: error.message,
+      error: {
+        code: 404,
+        description: error.message,
+      },
+    });
+  }
+};
+
+// updating existing user response
+
+// creating new user response
+const updateAUser = async (req: Request, res: Response) => {
+  try {
+    const userData = req.body;
+    const { userId } = req.params;
+    const zodData = UserValidation.userValidation.parse(userData);
+    const result = await UserService.updateAUser(Number(userId), zodData);
+
+    res.status(200).json({
+      success: true,
+      message: 'User updated successfully!',
+      data: result,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    // checks if the error is from zod else gets normal message from error
+    if (error instanceof ZodError) {
+      const errRes = errorFormatterZod(error);
+      res.json(errRes);
+    } else {
+      res.json({
+        success: false,
+        message: error.message || 'Something went wrong ',
+        error: {
+          code: 404,
+          description: error.message || 'Something went wrong ',
+        },
+      });
+    }
+  }
+};
+
 export const UserController = {
   createUser,
   getAllUsers,
+  findAUserById,
+  updateAUser,
 };
