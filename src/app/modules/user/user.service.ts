@@ -39,10 +39,13 @@ const findAUserById = async (userId: number) => {
     throw new Error('No user found with specific userId');
   }
   const result = User.findOne({ userId }).select({
+    userId: 1,
     username: 1,
     fullName: 1,
     age: 1,
     email: 1,
+    isActive: 1,
+    hobbies: 1,
     address: 1,
     _id: 0,
   });
@@ -74,19 +77,32 @@ const updateAUser = async (id: number, userData: TUser) => {
     );
   }
 
-  const userId = userData.userId;
+  const userId = id;
 
   const result = User.findOneAndUpdate({ userId }, userData, {
     new: true,
   }).select({
+    userId: 1,
     username: 1,
     fullName: 1,
     age: 1,
     email: 1,
+    isActive: 1,
+    hobbies: 1,
     address: 1,
     _id: 0,
   });
   return result;
+};
+
+//update a user
+
+const deleteAUserById = async (userId: number) => {
+  if (!(await User.isUserExist(userId))) {
+    throw new Error('No user found with specific userId');
+  }
+  User.deleteOne({ userId });
+  return null;
 };
 
 export const UserService = {
@@ -94,4 +110,5 @@ export const UserService = {
   getAllUsers,
   findAUserById,
   updateAUser,
+  deleteAUserById,
 };

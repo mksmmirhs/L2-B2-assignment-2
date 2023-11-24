@@ -109,13 +109,25 @@ userSchema.statics.isUserNameExist = async function (username: string) {
 // virtual
 
 userSchema.virtual('user_info').get(function (this) {
+  const userId = this.userId;
   const username = this.username;
   const fullName = this.fullName;
   const age = this.age;
   const email = this.email;
   const address = this.address;
+  const isActive = this.isActive;
+  const hobbies = this.hobbies;
 
-  const user_info = { username, fullName, age, email, address };
+  const user_info = {
+    userId,
+    username,
+    fullName,
+    age,
+    email,
+    address,
+    isActive,
+    hobbies,
+  };
   return user_info;
 });
 

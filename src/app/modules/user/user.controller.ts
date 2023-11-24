@@ -103,8 +103,6 @@ const findAUserById = async (req: Request, res: Response) => {
 };
 
 // updating existing user response
-
-// creating new user response
 const updateAUser = async (req: Request, res: Response) => {
   try {
     const userData = req.body;
@@ -136,9 +134,36 @@ const updateAUser = async (req: Request, res: Response) => {
   }
 };
 
+// delete a user response
+
+const deleteAUserById = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const result = await UserService.deleteAUserById(Number(userId));
+
+    res.status(200).json({
+      success: true,
+      message: 'user deleted successful!',
+      data: result,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    res.json({
+      success: false,
+      message: error.message,
+      error: {
+        code: 404,
+        description: error.message,
+      },
+    });
+  }
+};
+
 export const UserController = {
   createUser,
   getAllUsers,
   findAUserById,
   updateAUser,
+  deleteAUserById,
 };

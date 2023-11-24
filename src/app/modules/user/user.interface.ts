@@ -31,13 +31,7 @@ export type TUser = {
 };
 
 export type TUserInfo = TUser & {
-  user_info: {
-    username: string;
-    fullName: TFullName;
-    age: number;
-    email: string;
-    address: TAddress;
-  };
+  user_info: Partial<TUser>;
 };
 
 export interface UserModel extends Model<TUser> {
