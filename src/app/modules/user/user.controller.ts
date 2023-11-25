@@ -160,10 +160,44 @@ const deleteAUserById = async (req: Request, res: Response) => {
   }
 };
 
+// add new order
+
+const addAOrder = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const orderData = req.body;
+    const zodData = UserValidation.ordersValidation.parse(orderData);
+    const result = await UserService.addAOrder(Number(userId), zodData);
+
+    res.status(200).json({
+      success: true,
+      message: 'Order created successfully!',
+      data: result,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    // checks if the error is from zod else gets normal message from error
+    if (error instanceof ZodError) {
+      const errRes = errorFormatterZod(error);
+      res.json(errRes);
+    } else {
+      res.json({
+        success: false,
+        message: error.message || 'Something went wrong ',
+        error: {
+          code: 404,
+          description: error.message || 'Something went wrong ',
+        },
+      });
+    }
+  }
+};
+
 export const UserController = {
   createUser,
   getAllUsers,
   findAUserById,
   updateAUser,
   deleteAUserById,
+  addAOrder,
 };
