@@ -116,6 +116,58 @@ const addAOrder = async (id: number, Order: TOrders) => {
   return null;
 };
 
+// get all orders from user
+
+const getAllOrderFromUser = async (id: number) => {
+  if (!(await User.isUserExist(id))) {
+    throw new Error('User not found to get orders');
+  }
+
+  const result = await User.findOne({ userId: id }).select({
+    orders: 1,
+    _id: 0,
+  });
+  return result;
+};
+
+// get total price of order of a specific user
+
+const getTotalPriceOfOrder = async (id: number) => {
+  if (!(await User.isUserExist(id))) {
+    throw new Error('User not found to get orders');
+  }
+  const result = await User.aggregate([
+    // Stage 1 find the user with id
+    {
+      $match: { userId: id },
+    },
+    // Stage 2 returns an array containing total sum of each order
+    {
+      $project: {
+        total_price: {
+          $map: {
+            input: '$orders',
+            as: 'order',
+            in: {
+              $multiply: ['$$order.price', '$$order.quantity'],
+            },
+          },
+        },
+      },
+    },
+    // stage 3 returns the sum of total_price array
+    {
+      $project: {
+        totalPrice: { $sum: '$total_price' },
+        _id: 0,
+      },
+    },
+  ]);
+
+  // if total price is zero sends no order from the user it sends it
+  return result[0].totalPrice === 0 ? 'User have no order' : result[0];
+};
+
 export const UserService = {
   CreateUser,
   getAllUsers,
@@ -123,4 +175,6 @@ export const UserService = {
   updateAUser,
   deleteAUserById,
   addAOrder,
+  getAllOrderFromUser,
+  getTotalPriceOfOrder,
 };

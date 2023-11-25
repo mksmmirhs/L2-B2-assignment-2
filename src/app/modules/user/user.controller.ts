@@ -193,6 +193,57 @@ const addAOrder = async (req: Request, res: Response) => {
   }
 };
 
+// find all orders from user
+
+const getAllOrderFromUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const result = await UserService.getAllOrderFromUser(Number(userId));
+
+    res.status(200).json({
+      success: true,
+      message: 'Order fetched successfully!',
+      data: result,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    res.json({
+      success: false,
+      message: error.message,
+      error: {
+        code: 404,
+        description: error.message,
+      },
+    });
+  }
+};
+
+// find the total sum of orders
+const getTotalPriceOfOrder = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const result = await UserService.getTotalPriceOfOrder(Number(userId));
+
+    res.status(200).json({
+      success: true,
+      message: 'Total price calculated successfully!',
+      data: result,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    res.json({
+      success: false,
+      message: error.message,
+      error: {
+        code: 404,
+        description: error.message,
+      },
+    });
+  }
+};
+
 export const UserController = {
   createUser,
   getAllUsers,
@@ -200,4 +251,6 @@ export const UserController = {
   updateAUser,
   deleteAUserById,
   addAOrder,
+  getAllOrderFromUser,
+  getTotalPriceOfOrder,
 };
